@@ -6,18 +6,20 @@ export const api = axios.create({
   baseURL: API_URL,
 });
 
-// Store tokens
-const setAuthToken = (token: string) => {
-  localStorage.setItem('accessToken', token);
-  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+let authToken: string | null = null;
+
+export const setAuthToken = (token: string) => {
+  authToken = token;
+  localStorage.setItem('authToken', token);
 };
 
-const getAuthToken = () => localStorage.getItem('accessToken');
+export const getAuthToken = () => {
+  return authToken || localStorage.getItem('authToken');
+};
 
-// Remove tokens
-const removeAuthToken = () => {
-  localStorage.removeItem('accessToken');
-  delete api.defaults.headers.common['Authorization'];
+export const removeAuthToken = () => {
+  authToken = null;
+  localStorage.removeItem('authToken');
 };
 
 // Handle Sign-up
@@ -34,7 +36,7 @@ export const login = async (loginData: { email: string; password: string }) => {
 
 // Handle Refresh Token
 export const refreshToken = async (refreshToken: string) => {
-  const response = await api.post('/auth/refresh', { refreshToken });
+  const response = await api.post('/main/refresh', { refreshToken });
   setAuthToken(response.data.accessToken);
   return response.data;
 };
@@ -42,7 +44,7 @@ export const refreshToken = async (refreshToken: string) => {
 // Handle Protected Route
 export const getProtectedData = async () => {
   try {
-    const response = await api.get('/auth/omak', {
+    const response = await api.get('/main/hello', {
       headers: { Authorization: `Bearer ${getAuthToken()}` },
     });
     return response.data;
@@ -52,4 +54,12 @@ export const getProtectedData = async () => {
     }
     throw error;
   }
+};
+
+// Handle Logout
+export const logout = () => {
+  console.log(getAuthToken());
+  localStorage.removeItem('authToken'); // Remove token from storage
+  console.log(getAuthToken());
+  return api.post('/auth/logout', null, {});
 };

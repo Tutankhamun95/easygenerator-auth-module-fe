@@ -19,6 +19,7 @@ const routes = [
       }
     },
   },
+  { path: '/logout', component: LoginView },
 ];
 
 export default createRouter({

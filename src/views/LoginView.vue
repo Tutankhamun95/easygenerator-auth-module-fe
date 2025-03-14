@@ -10,12 +10,20 @@ const router = useRouter();
 
 const handleLogin = async () => {
     try {
-        await login({ email: email.value, password: password.value });
-        router.push('/dashboard'); // Redirect after login
-    } catch (error) {
-        errorMessage.value = 'Invalid credentials';
+        const response = await login({ email: email.value, password: password.value });
+
+        console.log('Login Response:', response);
+
+        localStorage.setItem('token', response.access_token);  // Store token
+
+        setTimeout(() => {
+            router.push('/dashboard');  // Redirect after login
+        }, 1500);
+    } catch (error: any) {
+        errorMessage.value = error.response?.data?.message || 'Login failed. Try again.';
     }
 };
+
 </script>
 
 <template>

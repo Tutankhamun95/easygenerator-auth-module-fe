@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue';
+import { getAuthToken } from '@/services/api';
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+
+const isLoggedIn = computed(() => !!getAuthToken()); // Check if token exists
 </script>
 
 <template>
@@ -11,9 +15,9 @@ import HelloWorld from './components/HelloWorld.vue'
       <HelloWorld msg="You did it!" />
 
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/login">Login</RouterLink>
-        <RouterLink to="/signup">Signup</RouterLink>
+        <RouterLink v-if="!isLoggedIn" to="/login">Login</RouterLink>
+        <RouterLink v-if="!isLoggedIn" to="/signup">Signup</RouterLink>
+        <RouterLink v-if="isLoggedIn" to="/dashboard">Dashboard</RouterLink>
       </nav>
     </div>
   </header>
